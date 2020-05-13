@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html  xmlns="http://www.w3.org/1999/xhtml"
+       xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+</head>
+<body>
+<script type="text/javascript" th:src="@{/plugs/jquery-2.0.2.min.js}"></script>
+<script th:inline="javascript">
+
+    function unlock() {
+        window.onbeforeunload = function(){
+            var sessionId = [[${sessionId}]];
+            var fileId = [[${data.getId()}]];
+            $.ajax({
+                type: "DELETE",
+                url: "/v0.1/files/" + fileId + "/actions/unlock?session_id=" + sessionId,
+                contentType: "application/json;charset=utf-8",
+                dataType: "json",
+                async: false,
+                success:function (res) {
+                    console.log(res);
+                },
+                error:function (message) {
+                    console.log(message)
+                }
+            });
+        };
+    }
+
+    function timerRelock() {
+        var lock = [[${lock}]];
+        if (lock == true) {
+            setInterval("relock()", 20000);
+        }
+    }
+
+    function relock() {
+        var sessionId = [[${sessionId}]];
+        var fileId = [[${data.getId()}]];
+        $.ajax({
+            type: "PUT",
+            url: "/v0.1/files/" + fileId + "/actions/relock?session_id=" + sessionId,
+            contentType: "application/json;charset=utf-8",
+            dataType: "json",
+            success:function (res) {
+                console.log(res);
+            },
+            error:function (message) {
+                alert(JSON.stringify(message));
+            }
+        });
+    }
+
+    function update(id) {
+        var data = {
+            "file_name":$("#filename").val(),
+            "text":$("#text").val()
+        };
+        var sessionId = [[${sessionId}]];
+        $.ajax({
+            type: "PUT",
+            url: "/v0.1/files/" + id + "?session_id=" + sessionId,
+            contentType: "application/json;charset=utf-8",
+            data:JSON.stringify(data),
+            dataType: "json",
+            success:function (res) {
+                console.log(res);
+                window.location.href = "http://106.13.20.234:8080/index";
+            },
+            error:function (message) {
+                alert("提交失败"+JSON.stringify(message));
+            }
+        });
+    }
+
+    unlock();
+    timerRelock();
+</script>
+<div>
+    <div th:switch="${lock}">
+        <p th:case="true">file name：<input type="text" id="filename" th:value="${data.getFileName()}"/></p>
+        <p th:case="false">file name：<input type="text" disabled="disabled" id="filename" th:value="${data.getFileName()}"/></p>
+    </div>
+    <br/>
+    <br/>
+    <div th:switch="${lock}">
+        <textarea th:case="true" rows="20" cols="60" id="text" th:text="${data.getText()}"></textarea>
+        <textarea th:case="false" rows="20" cols="60" id="text" disabled="disabled" th:text="${data.getText()}"></textarea>
+    </div>
+    <br>
+    <br>
+    <div th:if="${lock}">
+        <button th:onclick="|javascript:update(${data.getId()})|">save</button>
+    </div>
+</div>
+</body>
+</html>

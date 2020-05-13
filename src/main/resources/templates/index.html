@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html  xmlns="http://www.w3.org/1999/xhtml"
+       xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+</head>
+<body>
+<script type="text/javascript">
+
+</script>
+<div>
+    <a th:href="@{${#httpServletRequest.getContextPath()}+'/new'}">
+       <button>new</button>
+    </a>
+</div>
+<div>
+    <ul>
+        <li th:each="item:${data.items}">
+            <a th:text="${item.fileName}"
+               th:href="@{${#httpServletRequest.getContextPath()}+'/v0.1/files/'+${item.getId()}+'/actions/download'}"></a>
+            <a th:href="@{${#httpServletRequest.getContextPath()}+ ${item.getId()}+'/edit'}">
+                <button>edit</button>
+            </a>
+        </li>
+    </ul>
+</div>
+
+</body>
+</html>

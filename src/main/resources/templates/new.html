@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html  xmlns="http://www.w3.org/1999/xhtml"
+       xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="utf-8">
+</head>
+<body>
+<script type="text/javascript" th:src="@{/plugs/jquery-2.0.2.min.js}"></script>
+<script th:inline="javascript">
+function save() {
+    var data = {
+        "file_name":$("#filename").val(),
+        "text":$("#text").val()
+    };
+    $.ajax({
+        type: "POST",
+        url: "/v0.1/files",
+        contentType: "application/json;charset=utf-8",
+        data:JSON.stringify(data),
+        dataType: "json",
+        success:function (res) {
+            console.log(res);
+            window.location.href = "http://106.13.20.234:8080/index";
+        },
+        error:function (message) {
+            alert("提交失败"+JSON.stringify(message));
+        }
+    });
+}
+</script>
+<div>
+    <input type="hidden" id="contextPath" th:value="${#httpServletRequest.getContextPath()}"/>
+    file name：<input type="text" id="filename" />
+    <br/>
+    <br/>
+    <textarea rows="20" cols="60" id="text"></textarea>
+    <br>
+    <br>
+    <button th:onclick="|javascript:save()|">save</button>
+</div>
+</body>
+</html>
